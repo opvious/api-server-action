@@ -9,6 +9,10 @@ inputs:
     description: Docker image tag
     required: false
     default: latest
+  cli-version:
+    description: CLI version
+    required: false
+    default: latest
   log-level:
     description: Log level
     required: false
@@ -25,7 +29,7 @@ runs:
       uses: actions/setup-node@v4
     - name: Install CLI
       shell: bash
-      run: npm i -g opvious-cli
+      run: npm i -g opvious-cli@${{ inputs.cli-version }}
     - name: Prepare options
       id: prepare-options
       shell: bash
@@ -48,7 +52,6 @@ runs:
           --log-level "${{ inputs.log-level }}" \
           --image-tag ${{ inputs.image-tag }}
       env:
-        OPVIOUS_API_IMAGE_EULA: accepted
         OPVIOUS_TOKEN: ${{ steps.prepare-options.outputs.token }}
     - name: Set endpoint
       shell: bash
