@@ -1,0 +1,59 @@
+name: Opvious API server
+description: Start an optimization API server
+inputs:
+  license-key:
+    description: Opvious license key
+    required: false
+    default: ''
+  skip-node-setup:
+    description: Skip setup-node action step
+    required: false
+    default: false
+  image-tag:
+    description: Docker image tag
+    required: false
+    default: latest
+  log-level:
+    description: Log level
+    required: false
+    default: info
+runs:
+  using: composite
+  steps:
+    - name: Set up Node
+      if: ${{ inputs.skip-node-setup != 'true' }}
+      uses: actions/setup-node@v4
+    - name: Install CLI
+      run: npm i -g opvious-cli
+    - name: Prepare options
+      id: prepare-options
+      run: |
+        # Bucket
+        bucket="$(mktemp -d)"
+        sudo chown 1000:1000 "$bucket"
+        echo "bucket=$bucket" >>"$GITHUB_OUTPUT"
+        # License
+        if [[ -z ${{ inputs.license-key }} ]]; then
+          echo "token=" >>"$GITHUB_OUTPUT"
+        else
+          echo "token=license:${{ inputs.license-key }}" >>"$GITHUB_OUTPUT"
+        fi
+    - name: Start API server
+      run: |
+        opvious api start -w \
+          --bucket "${{ steps.prepare-options.outputs.bucket }}" \
+          --log-level "${{ inputs.log-level }}" \
+          --image-tag ${{ inputs.image-tag }}
+      env:
+        OPVIOUS_API_IMAGE_EULA: accepted
+        OPVIOUS_TOKEN: ${{ steps.prepare-options.outputs.token }}
+    - name: Set endpoint
+      run: |
+        echo "OPVIOUS_ENDPOINT=http://localhost:8080" >>"$GITHUB_ENV"
+    - name: Set token
+      if: ${{ inputs.license-key != '' }}
+      run: |
+        token="$(opvious authorization generate gha)"
+        echo "OPVIOUS_TOKEN=$token" >>"$GITHUB_ENV"
+      env:
+        OPVIOUS_TOKEN: license:${{ inputs.license-key }}
