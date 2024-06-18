@@ -24,7 +24,7 @@ All inputs are optional.
 
 This action has no outputs. It sets the `OPVIOUS_ENDPOINT` and `OPVIOUS_TOKEN`
 environment variables appropriately for later use by SDKs. The [`opvious`
-CLI][] is also installed for use in follow up steps.
+CLI][CLI] is also installed for use in follow up steps.
 
 
 ## License
