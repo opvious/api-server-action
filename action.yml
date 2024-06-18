@@ -24,9 +24,11 @@ runs:
       if: ${{ inputs.skip-node-setup != 'true' }}
       uses: actions/setup-node@v4
     - name: Install CLI
+      shell: bash
       run: npm i -g opvious-cli
     - name: Prepare options
       id: prepare-options
+      shell: bash
       run: |
         # Bucket
         bucket="$(mktemp -d)"
@@ -39,6 +41,7 @@ runs:
           echo "token=license:${{ inputs.license-key }}" >>"$GITHUB_OUTPUT"
         fi
     - name: Start API server
+      shell: bash
       run: |
         opvious api start -w \
           --bucket "${{ steps.prepare-options.outputs.bucket }}" \
@@ -48,10 +51,12 @@ runs:
         OPVIOUS_API_IMAGE_EULA: accepted
         OPVIOUS_TOKEN: ${{ steps.prepare-options.outputs.token }}
     - name: Set endpoint
+      shell: bash
       run: |
         echo "OPVIOUS_ENDPOINT=http://localhost:8080" >>"$GITHUB_ENV"
     - name: Set token
       if: ${{ inputs.license-key != '' }}
+      shell: bash
       run: |
         token="$(opvious authorization generate gha)"
         echo "OPVIOUS_TOKEN=$token" >>"$GITHUB_ENV"
