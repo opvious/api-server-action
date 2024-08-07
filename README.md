@@ -3,7 +3,7 @@
 ```yaml
 steps:
   # ...
-  - uses: opvious/api-server-action@v0.2.0
+  - uses: opvious/api-server-action@v0.3.0
     with:
       license-key: ${{ secrets.OPVIOUS_LICENSE_KEY }} # Optional
 ```
