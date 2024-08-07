@@ -29,7 +29,7 @@ runs:
       uses: actions/setup-node@v4
     - name: Install CLI
       shell: bash
-      run: npm i -g opvious-cli@${{ inputs.cli-version }}
+      run: npm i -g "opvious-cli@${{ inputs.cli-version }}"
     - name: Prepare options
       id: prepare-options
       shell: bash
@@ -39,11 +39,13 @@ runs:
         sudo chown 1000:1000 "$bucket"
         echo "bucket=$bucket" >>"$GITHUB_OUTPUT"
         # License
-        if [[ -z ${{ inputs.license-key }} ]]; then
+        if [[ -z $OPVIOUS_LICENSE_KEY ]]; then
           echo "token=" >>"$GITHUB_OUTPUT"
         else
-          echo "token=license:${{ inputs.license-key }}" >>"$GITHUB_OUTPUT"
+          echo "token=license:$OPVIOUS_LICENSE_KEY" >>"$GITHUB_OUTPUT"
         fi
+      env:
+        OPVIOUS_LICENSE_KEY: ${{ inputs.license-key }}
     - name: Start API server
       shell: bash
       run: |
